@@ -1,0 +1,59 @@
+import ToDo from '../models/todo';
+import { Observable } from 'rxjs/Rx';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Response } from '@angular/http';
+import { Injectable } from '@angular/core';
+
+import 'rxjs/add/operator/map';
+
+@Injectable()
+export class ToDoService{
+
+  api_url = 'http://localhost:3000';
+  todoUrl = `${this.api_url}/api/todos`;
+
+  constructor(
+    private http : HttpClient
+  ){
+
+  }
+
+
+  //C
+  createTodo(todo : ToDo): Observable<any>{
+    return this.http.post(`${this.todoUrl}`, todo);
+  }
+
+  //R
+  getTodos(): Observable<ToDo[]>{
+    return this.http.get(this.todoUrl)
+    .map(res => {
+      return res["data"].docs as ToDo[];
+    });
+  }
+
+  //U
+  editTodo(todo : ToDo){
+    let editUrl = `${this.todoUrl}`
+
+    return this.http.put(editUrl, todo);
+  }
+
+  //D
+  deleteTodo(id:string) : any{
+    let deleteUrl = `${this.todoUrl}/${id}`
+
+    return this.http.delete(deleteUrl)
+    .map(res => {
+      return res;
+    });
+  }
+
+
+  private handleError(error : any): Promise<any>{
+    console.error('An error ocurred', error);
+
+    return Promise.reject(error.message || error);
+  }
+
+}
